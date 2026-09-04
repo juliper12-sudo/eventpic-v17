@@ -199,6 +199,7 @@ with check (
 -- Funções públicas do portal. O token UUID funciona como credencial do convite.
 create or replace function public.get_wedding_by_token(p_token uuid)
 returns table (
+  id uuid,
   names text,
   wedding_date date,
   venue text,
@@ -207,15 +208,16 @@ returns table (
   start_time time,
   arrival_time time,
   social_permission boolean,
-  crop_x numeric
+  crop_x numeric,
+  status text
 )
 language sql
 stable
 security definer
 set search_path = ''
 as $$
-  select w.names, w.wedding_date, w.venue, w.address, w.guests,
-         w.start_time, w.arrival_time, w.social_permission, w.crop_x
+  select w.id, w.names, w.wedding_date, w.venue, w.address, w.guests,
+         w.start_time, w.arrival_time, w.social_permission, w.crop_x, w.status
   from public.weddings w
   where w.private_token = p_token
   limit 1
