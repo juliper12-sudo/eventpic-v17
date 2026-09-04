@@ -116,7 +116,7 @@ create or replace function public.create_public_lead(
   p_wedding_date date default null, p_venue text default null, p_guests integer default null,
   p_origin text default 'Landing Page', p_source text default null,
   p_medium text default null, p_campaign text default null
-) returns uuid language plpgsql security definer set search_path=public as $$
+) returns uuid language plpgsql security definer set search_path='' as $
 declare new_id uuid;
 begin
   if p_names is null or length(trim(p_names)) < 2 then raise exception 'Nome inválido'; end if;
