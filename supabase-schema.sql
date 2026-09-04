@@ -353,15 +353,6 @@ with check (
 );
 
 drop policy if exists "authorized staff reads wedding assets" on storage.objects;
-create policy "authorized staff reads wedding assets" on storage.objects
-for select to authenticated
-using (
-  bucket_id = 'wedding-assets'
-  and exists (
-    select 1 from public.staff_users s
-    where s.user_id = (select auth.uid()) and s.active
-  )
-);
 
 drop policy if exists "authorized staff manages wedding assets" on storage.objects;
 create policy "authorized staff manages wedding assets" on storage.objects
