@@ -173,11 +173,13 @@ create index if not exists wedding_timeline_wedding_created_idx
   on public.wedding_timeline (wedding_id, created_at desc);
 alter table public.wedding_timeline enable row level security;
 grant select, insert, update, delete on public.wedding_timeline to authenticated;
-do $ begin
+do $grant$
+begin
   if to_regclass('public.wedding_timeline_id_seq') is not null then
-    grant usage, select on sequence public.wedding_timeline_id_seq to authenticated;
+    execute 'grant usage, select on sequence public.wedding_timeline_id_seq to authenticated';
   end if;
-end $;
+end
+$grant$;
 drop policy if exists "authorized staff wedding timeline" on public.wedding_timeline;
 create policy "authorized staff wedding timeline" on public.wedding_timeline
 for all to authenticated
