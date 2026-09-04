@@ -331,6 +331,9 @@ set public = false,
     file_size_limit = excluded.file_size_limit,
     allowed_mime_types = excluded.allowed_mime_types;
 
+drop policy if exists "portal_update_wedding_assets" on storage.objects;
+drop policy if exists "portal_upload_wedding_assets" on storage.objects;
+drop policy if exists "staff_read_wedding_assets" on storage.objects;
 drop policy if exists "portal uploads wedding assets" on storage.objects;
 create policy "portal uploads wedding assets" on storage.objects
 for insert to anon
