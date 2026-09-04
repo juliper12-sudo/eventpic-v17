@@ -173,6 +173,11 @@ create index if not exists wedding_timeline_wedding_created_idx
   on public.wedding_timeline (wedding_id, created_at desc);
 alter table public.wedding_timeline enable row level security;
 grant select, insert, update, delete on public.wedding_timeline to authenticated;
+do $ begin
+  if to_regclass('public.wedding_timeline_id_seq') is not null then
+    grant usage, select on sequence public.wedding_timeline_id_seq to authenticated;
+  end if;
+end $;
 drop policy if exists "authorized staff wedding timeline" on public.wedding_timeline;
 create policy "authorized staff wedding timeline" on public.wedding_timeline
 for all to authenticated
@@ -190,7 +195,7 @@ with check (
 );
 
 -- Funções públicas do portal. O token UUID funciona como credencial do convite.
-create or replace function public.get_wedding_by_token(p_token text)
+create or replace function public.get_wedding_by_token(p_token uuid)
 returns table (
   names text,
   wedding_date date,
@@ -210,15 +215,14 @@ as $$
   select w.names, w.wedding_date, w.venue, w.address, w.guests,
          w.start_time, w.arrival_time, w.social_permission, w.crop_x
   from public.weddings w
-  where length(p_token) = 36
-    and w.private_token::text = p_token
+  where w.private_token = p_token
   limit 1
 $$;
-revoke all on function public.get_wedding_by_token(text) from public;
+revoke all on function public.get_wedding_by_token(uuid) from public;
 grant execute on function public.get_wedding_by_token(text) to anon, authenticated;
 
 create or replace function public.submit_wedding_by_token(
-  p_token text,
+  p_token uuid,
   p_names text default null,
   p_wedding_date date default null,
   p_venue text default null,
@@ -237,7 +241,6 @@ as $$
 declare
   changed_count integer;
 begin
-  if length(coalesce(p_token, '')) <> 36 then return false; end if;
   if p_names is not null and (length(trim(p_names)) < 2 or length(p_names) > 160) then
     raise exception 'Nome inválido';
   end if;
@@ -261,16 +264,16 @@ begin
       portal_status = 'Concluído',
       status = 'Concluído',
       updated_at = now()
-  where w.private_token::text = p_token;
+  where w.private_token = p_token;
   get diagnostics changed_count = row_count;
   return changed_count = 1;
 end
 $$;
-revoke all on function public.submit_wedding_by_token(text,text,date,text,text,integer,time,time,boolean,numeric) from public;
-grant execute on function public.submit_wedding_by_token(text,text,date,text,text,integer,time,time,boolean,numeric) to anon, authenticated;
+revoke all on function public.submit_wedding_by_token(uuid,text,date,text,text,integer,time,time,boolean,numeric) from public;
+grant execute on function public.submit_wedding_by_token(uuid,text,date,text,text,integer,time,time,boolean,numeric) to anon, authenticated;
 
 create or replace function public.record_wedding_assets_by_token(
-  p_token text,
+  p_token uuid,
   p_original text default null,
   p_logo_color text default null
 )
@@ -284,15 +287,14 @@ declare
 begin
   select w.id into target_wedding
   from public.weddings w
-  where length(coalesce(p_token, '')) = 36
-    and w.private_token::text = p_token
+  where w.private_token = p_token
   limit 1;
 
   if target_wedding is null then return false; end if;
-  if p_original is not null and p_original not like p_token || '/original-photo-%' then
+  if p_original is not null and p_original not like p_token::text || '/original-photo-%' then
     raise exception 'Caminho de fotografia inválido';
   end if;
-  if p_logo_color is not null and p_logo_color not like p_token || '/logo-color-%' then
+  if p_logo_color is not null and p_logo_color not like p_token::text || '/logo-color-%' then
     raise exception 'Caminho de símbolo inválido';
   end if;
 
@@ -312,8 +314,8 @@ begin
   return true;
 end
 $$;
-revoke all on function public.record_wedding_assets_by_token(text,text,text) from public;
-grant execute on function public.record_wedding_assets_by_token(text,text,text) to anon, authenticated;
+revoke all on function public.record_wedding_assets_by_token(uuid,text,text) from public;
+grant execute on function public.record_wedding_assets_by_token(uuid,text,text) to anon, authenticated;
 
 -- Bucket privado. O portal só pode criar imagens numa pasta cujo nome é um token válido.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
