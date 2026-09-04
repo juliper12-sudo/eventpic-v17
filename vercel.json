@@ -3,7 +3,7 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/dashboard", "destination": "/admin-v2.html" },
+    { "source": "/dashboard", "destination": "/dashboard-v3.html" },
     { "source": "/noivos", "destination": "/portal.html" }
   ]
 }
