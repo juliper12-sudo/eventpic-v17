@@ -223,7 +223,7 @@ as $$
   limit 1
 $$;
 revoke all on function public.get_wedding_by_token(uuid) from public;
-grant execute on function public.get_wedding_by_token(text) to anon, authenticated;
+grant execute on function public.get_wedding_by_token(uuid) to anon, authenticated;
 
 create or replace function public.submit_wedding_by_token(
   p_token uuid,
