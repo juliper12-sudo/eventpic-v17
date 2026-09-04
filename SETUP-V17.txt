@@ -11,7 +11,9 @@ on conflict (user_id) do update set active=true, role='admin';
 4) O Portal dos Noivos (index.html) continua sem login.
 5) O Dashboard (dashboard.html) exige email/password e valida a allowlist staff_users.
 6) Leads manuais já ficam no Supabase. A função create_public_lead está pronta para a landing page.
-7) Meta: a pasta supabase/functions/meta-webhook contém o receptor inicial. Ainda é preciso configurar
-   a Meta App, META_VERIFY_TOKEN e o Page Access Token/permissões para transformar leadgen_id nos dados completos do lead.
+7) Publicar a função separadamente no Supabase: supabase functions deploy meta-webhook.
+8) Configurar os secrets META_VERIFY_TOKEN e META_APP_SECRET no Supabase. O META_APP_SECRET é usado para validar a assinatura de todos os POST da Meta.
+9) Configurar o Page Access Token/permissões na Meta para transformar leadgen_id nos dados completos do lead.
+10) Depois de executar o SQL, testar: login do dashboard, abertura de um link /noivos, upload JPG/PNG/WebP até 10 MB e gravação da personalização.
 
 NUNCA colocar sb_secret/service_role em config.js ou HTML.
