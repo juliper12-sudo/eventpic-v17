@@ -1,0 +1,41 @@
+EVENTPIC — ARQUITETURA ONLINE PREPARADA
+
+LANDING PAGE
+  ↓ formulário
+API / endpoint seguro
+  ↓
+LEADS
+  Novo lead → Contactado → Convertido → Fechado
+  ↓ converter
+CASAMENTOS
+  gestão por mês + dias até ao evento
+  ↓
+PORTAL PRIVADO DOS NOIVOS
+  dados + foto horizontal + símbolo + personalização
+  ↓
+PERSONALIZAÇÃO
+  original horizontal + app vertical + logo cor + logo branco
+
+BASE ONLINE
+- Supabase/Postgres
+- Autenticação do Dashboard
+- Row Level Security
+- Tabelas separadas: leads, weddings, personalizations
+- Preparado para Storage de fotos/logos
+- Preparado para UTM/source/medium/campaign
+
+SEGURANÇA
+- Nunca colocar secret/service_role key no browser.
+- Dashboard deve exigir login.
+- Landing page deve enviar leads através de endpoint/função segura.
+- Portal dos noivos deve usar token privado e permissões limitadas.
+
+PRÓXIMA LIGAÇÃO
+1. Criar projeto Supabase.
+2. Executar supabase-schema.sql.
+3. Configurar URL + publishable key.
+4. Criar autenticação do Dashboard.
+5. Criar endpoint de entrada da Landing Page.
+6. Migrar IndexedDB/localStorage para Supabase.
+7. Criar Storage para fotos e símbolos.
+8. Publicar site em domínio/subdomínio HTTPS.

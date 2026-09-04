@@ -1,0 +1,17 @@
+EVENTPIC V17 — PASSOS NO SUPABASE
+
+1) Abrir SQL Editor no projeto jwdxnjdwidntkushelal e executar supabase-schema.sql.
+2) Authentication > Users > Add user: criar o utilizador do Dashboard com o email escolhido e password.
+3) No SQL Editor, autorizar esse utilizador (trocar EMAIL_AQUI):
+
+insert into public.staff_users(user_id,email,role)
+select id,email,'admin' from auth.users where lower(email)=lower('EMAIL_AQUI')
+on conflict (user_id) do update set active=true, role='admin';
+
+4) O Portal dos Noivos (index.html) continua sem login.
+5) O Dashboard (dashboard.html) exige email/password e valida a allowlist staff_users.
+6) Leads manuais já ficam no Supabase. A função create_public_lead está pronta para a landing page.
+7) Meta: a pasta supabase/functions/meta-webhook contém o receptor inicial. Ainda é preciso configurar
+   a Meta App, META_VERIFY_TOKEN e o Page Access Token/permissões para transformar leadgen_id nos dados completos do lead.
+
+NUNCA colocar sb_secret/service_role em config.js ou HTML.

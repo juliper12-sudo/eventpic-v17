@@ -1,0 +1,22 @@
+EVENTPIC V16 — ONLINE READY
+
+Esta versão prepara a passagem do protótipo local para uma aplicação online.
+
+Inclui:
+- estrutura SQL da base de dados
+- leads
+- casamentos
+- personalizações
+- estados comerciais
+- configuração para Supabase
+- RLS/autenticação preparada
+- arquitetura para Landing Page → Dashboard
+- arquitetura para ficheiros/fotos/logos
+
+Ainda NÃO está ligada a uma base de dados real porque faltam as credenciais
+do projeto online. A versão local continua funcional para testes.
+
+Ficheiros novos:
+- supabase-schema.sql
+- config.js
+- ARQUITETURA-ONLINE.txt
