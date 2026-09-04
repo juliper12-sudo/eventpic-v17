@@ -1,1 +1,17 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Eventpic — Dashboard</title><style>html,body{margin:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%}</style></head><body><iframe id="dash" src="dashboard.html"></iframe><script>dash.onload=()=>{const w=dash.contentWindow,d=dash.contentDocument;const s=d.createElement('script');s.src='cloud-admin.js?v=2';d.body.appendChild(s);d.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const t=b.textContent||'';if(/Copiar link privado/i.test(t)&&w.currentEventpic?.privateToken){e.preventDefault();e.stopImmediatePropagation();const u=location.origin+'/portal.html?token='+encodeURIComponent(w.currentEventpic.privateToken);try{await navigator.clipboard.writeText(u);alert('Link privado copiado.')}catch(_){prompt('Copia este link:',u)}}if(/Ver como os noivos/i.test(t)&&w.currentEventpic?.privateToken){e.preventDefault();e.stopImmediatePropagation();window.open(location.origin+'/portal.html?token='+encodeURIComponent(w.currentEventpic.privateToken),'_blank')}} ,true);};</script></body></html>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Eventpic — Dashboard</title><style>html,body{margin:0;height:100%;overflow:hidden}iframe{border:0;width:100%;height:100%}</style></head><body><iframe id="dash" src="dashboard.html"></iframe><script>
+dash.onload=()=>{
+ const w=dash.contentWindow,d=dash.contentDocument;
+ const s=d.createElement('script');s.src='cloud-admin.js?v=3';d.body.appendChild(s);
+ d.addEventListener('click',async e=>{
+  const b=e.target.closest('button');if(!b)return;const t=(b.textContent||'').trim();
+  if(/^\+\s*Novo casamento$/i.test(t) && b.id!=='newW'){
+   e.preventDefault();e.stopImmediatePropagation();
+   const openCloud=()=>{const cb=d.getElementById('cloudBtn'),nw=d.getElementById('newW');if(cb&&nw){cb.click();setTimeout(()=>nw.click(),80);return true}return false};
+   if(!openCloud())setTimeout(()=>{if(!openCloud())alert('A gestão online ainda está a carregar. Tenta novamente dentro de um instante.')},500);
+   return;
+  }
+  if(/Copiar link privado/i.test(t)&&w.currentEventpic?.privateToken){e.preventDefault();e.stopImmediatePropagation();const u=location.origin+'/portal.html?token='+encodeURIComponent(w.currentEventpic.privateToken);try{await navigator.clipboard.writeText(u);alert('Link privado copiado.')}catch(_){prompt('Copia este link:',u)}return}
+  if(/Ver como os noivos/i.test(t)&&w.currentEventpic?.privateToken){e.preventDefault();e.stopImmediatePropagation();window.open(location.origin+'/portal.html?token='+encodeURIComponent(w.currentEventpic.privateToken),'_blank');return}
+ },true);
+};
+</script></body></html>
