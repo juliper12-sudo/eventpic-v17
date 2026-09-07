@@ -340,16 +340,32 @@ drop policy if exists "portal_update_wedding_assets" on storage.objects;
 drop policy if exists "portal_upload_wedding_assets" on storage.objects;
 drop policy if exists "staff_read_wedding_assets" on storage.objects;
 drop policy if exists "portal uploads wedding assets" on storage.objects;
+create schema if not exists private;
+
+create or replace function private.is_valid_wedding_asset_token(p_token text)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $
+  select exists (
+    select 1
+    from public.weddings w
+    where w.private_token::text = p_token
+  );
+$;
+
+revoke all on function private.is_valid_wedding_asset_token(text) from public, authenticated;
+grant usage on schema private to anon;
+grant execute on function private.is_valid_wedding_asset_token(text) to anon;
+
 create policy "portal uploads wedding assets" on storage.objects
-for insert to anon, authenticated
+for insert to anon
 with check (
   bucket_id = 'wedding-assets'
   and lower(storage.extension(name)) in ('jpg','jpeg','png','webp')
-  and exists (
-    select 1
-    from public.weddings w
-    where w.private_token::text = (storage.foldername(name))[1]
-  )
+  and private.is_valid_wedding_asset_token((storage.foldername(name))[1])
 );
 
 drop policy if exists "authorized staff reads wedding assets" on storage.objects;
@@ -372,3 +388,26 @@ with check (
   )
 );
 
+
+
+-- Security hardening: only intended public token flows remain callable.
+revoke all on function public.get_public_team_events() from public, anon, authenticated;
+revoke all on function public.valid_wedding_token(uuid) from public, anon, authenticated;
+revoke all on function public.record_wedding_assets_by_token(uuid, text, text, text, text) from public, anon, authenticated;
+revoke all on function public.get_team_availability_by_token(uuid) from public, anon, authenticated;
+revoke all on function public.set_team_availability_by_token(uuid, uuid, text) from public, anon, authenticated;
+
+revoke all on function public.create_public_lead(text, text, text, date, text, integer, text, text, text, text) from public, authenticated;
+grant execute on function public.create_public_lead(text, text, text, date, text, integer, text, text, text, text) to anon;
+
+revoke all on function public.get_wedding_by_token(uuid) from public, authenticated;
+grant execute on function public.get_wedding_by_token(uuid) to anon;
+revoke all on function public.submit_wedding_by_token(uuid, text, date, text, text, integer, time, time, boolean, numeric) from public, authenticated;
+grant execute on function public.submit_wedding_by_token(uuid, text, date, text, text, integer, time, time, boolean, numeric) to anon;
+revoke all on function public.submit_personalization_assets_by_token(uuid, text, text, text, text) from public, authenticated;
+grant execute on function public.submit_personalization_assets_by_token(uuid, text, text, text, text) to anon;
+
+revoke all on function public.get_team_availability_by_member_token(uuid) from public, authenticated;
+grant execute on function public.get_team_availability_by_member_token(uuid) to anon;
+revoke all on function public.set_team_availability_by_member_token(uuid, uuid, text) from public, authenticated;
+grant execute on function public.set_team_availability_by_member_token(uuid, uuid, text) to anon;
