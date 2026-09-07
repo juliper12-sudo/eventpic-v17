@@ -2,6 +2,18 @@
   "framework": null,
   "cleanUrls": false,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/admin-v2.html",
+      "destination": "/dashboard",
+      "permanent": false
+    },
+    {
+      "source": "/admin.html",
+      "destination": "/dashboard",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/dashboard",
