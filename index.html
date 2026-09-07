@@ -337,11 +337,12 @@ const im=new Image();im.onload=()=>{
   const c=document.createElement('canvas'),ctx=c.getContext('2d');
   c.width=im.naturalWidth;c.height=im.naturalHeight;ctx.drawImage(im,0,0);
   let d=ctx.getImageData(0,0,c.width,c.height),a=d.data;
+  const sourceHasTransparency=(()=>{for(let i=3;i<a.length;i+=4)if(a[i]<20)return true;return false})();
   // Remove fundos claros e fundos uniformes ligados às margens, preservando o desenho interior.
   const W=c.width,H=c.height, seen=new Uint8Array(W*H), q=[];
   const corner=[[0,0],[W-1,0],[0,H-1],[W-1,H-1]];
   let br=0,bg=0,bb=0; corner.forEach(([x,y])=>{let j=(y*W+x)*4;br+=a[j];bg+=a[j+1];bb+=a[j+2]});br/=4;bg/=4;bb/=4;
-  const isBg=(j)=>{let r=a[j],g=a[j+1],b=a[j+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);let dist=Math.hypot(r-br,g-bg,b-bb);return (mx>232&&mx-mn<28)||dist<48};
+  const isBg=(j)=>{if(sourceHasTransparency)return a[j+3]<20;let r=a[j],g=a[j+1],b=a[j+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);let dist=Math.hypot(r-br,g-bg,b-bb);return (mx>232&&mx-mn<28)||dist<48};
   for(let x=0;x<W;x++){q.push(x,(H-1)*W+x)} for(let y=0;y<H;y++){q.push(y*W,y*W+W-1)}
   for(let h=0;h<q.length;h++){let p=q[h];if(seen[p])continue;seen[p]=1;let j=p*4;if(!isBg(j))continue;a[j+3]=0;let x=p%W,y=(p/W)|0;if(x)q.push(p-1);if(x<W-1)q.push(p+1);if(y)q.push(p-W);if(y<H-1)q.push(p+W)}
   ctx.putImageData(d,0,0);
@@ -358,8 +359,8 @@ const im=new Image();im.onload=()=>{
     crop.width=maxX-minX+1;crop.height=maxY-minY+1;
     crop.getContext('2d').drawImage(c,minX,minY,crop.width,crop.height,0,0,crop.width,crop.height);
   }
-  let color=crop.toDataURL('image/png');
-  document.querySelectorAll('.logoColor').forEach(x=>{x.src=color;x.style.display='block'});
+  let sample=crop.getContext('2d').getImageData(0,0,crop.width,crop.height),sa=sample.data,visible=0,lightPixels=0;for(let i=0;i<sa.length;i+=4){if(sa[i+3]<20)continue;visible++;if(sa[i]>220&&sa[i+1]>220&&sa[i+2]>220)lightPixels++}const whiteSource=visible>0&&lightPixels/visible>.6;let colorCanvas=crop;if(whiteSource){colorCanvas=document.createElement('canvas');colorCanvas.width=crop.width;colorCanvas.height=crop.height;let cx=colorCanvas.getContext('2d');cx.drawImage(crop,0,0);let cd=cx.getImageData(0,0,colorCanvas.width,colorCanvas.height),ca=cd.data;for(let i=0;i<ca.length;i+=4){if(ca[i+3]>0){ca[i]=0;ca[i+1]=0;ca[i+2]=0}}cx.putImageData(cd,0,0)}let color=colorCanvas.toDataURL('image/png');
+  document.querySelectorAll('.logoColor').forEach(x=>{x.src=color;x.style.display='block';x.style.filter='none'});
 
   let w=document.createElement('canvas'),wx=w.getContext('2d');
   w.width=crop.width;w.height=crop.height;wx.drawImage(crop,0,0);
