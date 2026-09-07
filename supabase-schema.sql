@@ -341,7 +341,7 @@ drop policy if exists "portal_upload_wedding_assets" on storage.objects;
 drop policy if exists "staff_read_wedding_assets" on storage.objects;
 drop policy if exists "portal uploads wedding assets" on storage.objects;
 create policy "portal uploads wedding assets" on storage.objects
-for insert to anon
+for insert to anon, authenticated
 with check (
   bucket_id = 'wedding-assets'
   and lower(storage.extension(name)) in ('jpg','jpeg','png','webp')
