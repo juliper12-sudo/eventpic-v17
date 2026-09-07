@@ -328,7 +328,7 @@ values (
   'wedding-assets',
   'wedding-assets',
   false,
-  10485760,
+  26214400,
   array['image/jpeg','image/png','image/webp']
 )
 on conflict (id) do update
