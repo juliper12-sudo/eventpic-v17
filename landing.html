@@ -65,11 +65,11 @@ footer{padding:28px 0;color:#667085;font-size:13px}.footer-row{display:flex;just
 (function(){
  var client=supabase.createClient(EVENTPIC_SUPABASE_URL,EVENTPIC_SUPABASE_PUBLISHABLE_KEY);
  var form=document.getElementById('leadForm'),status=document.getElementById('formStatus'),button=document.getElementById('submitBtn');
- var params=new URLSearchParams(location.search),started=Date.now();
+ var params=new URLSearchParams(location.search);
  form.addEventListener('submit',async function(e){
   e.preventDefault();
   status.className='status';status.textContent='';
-  if(document.getElementById('website').value||Date.now()-started<1500)return;
+  if(document.getElementById('website').value){status.className='status error';status.textContent='Não foi possível validar o pedido. Atualiza a página e tenta novamente.';return;}
   button.disabled=true;button.textContent='A enviar…';
   var payload={
    p_names:document.getElementById('names').value.trim(),
@@ -87,9 +87,10 @@ footer{padding:28px 0;color:#667085;font-size:13px}.footer-row{display:flex;just
   try{
    var result=await client.rpc('create_public_lead',payload);
    if(result.error)throw result.error;
-   form.reset();status.className='status ok';status.textContent='Pedido enviado. A equipa Eventpic vai entrar em contacto contigo.';
+   if(!result.data)throw new Error('A base de dados não confirmou o pedido.');
+   form.reset();status.className='status ok';status.textContent='Pedido enviado e registado. A equipa Eventpic vai entrar em contacto contigo.';
   }catch(err){
-   status.className='status error';status.textContent='Não foi possível enviar. Tenta novamente ou liga 938 291 407.';
+   console.error('Falha no envio do lead:',err);status.className='status error';status.textContent='Não foi possível registar o pedido. Atualiza a página e tenta novamente ou liga 938 291 407.';
   }finally{button.disabled=false;button.textContent='Enviar pedido';}
  });
 })();
