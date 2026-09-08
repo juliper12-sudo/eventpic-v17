@@ -55,7 +55,7 @@
       ]
     },
     {
-      "source": "/(config.js|portal.html|dashboard-premium.html|dashboard-v4.html)",
+      "source": "/(config.js|landing.html|portal.html|dashboard-premium.html|dashboard-v4.html)",
       "headers": [
         {
           "key": "Cache-Control",
