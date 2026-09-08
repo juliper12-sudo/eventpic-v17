@@ -3,7 +3,7 @@ const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>'
 module.exports=async function handler(req,res){
  if(req.method==='GET')return res.status(200).json({configured:!!process.env.RESEND_API_KEY,from:process.env.RESEND_FROM_EMAIL||'onboarding@resend.dev'});
  if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});
- const origin=req.headers.origin||''; if(origin&&!allowed.has(origin))return res.status(403).json({error:'Origin not allowed'});
+ const origin=req.headers.origin||''; if(!allowed.has(origin))return res.status(403).json({error:'Origin not allowed'});
  if(!process.env.RESEND_API_KEY)return res.status(503).json({error:'Email service not configured'});
  const x=req.body||{}; if(!x.names||String(x.names).length>160)return res.status(400).json({error:'Invalid lead'});
  const rows=[['Nome',x.names],['Telemóvel',x.phone],['Email',x.email],['Data do evento',x.wedding_date],['Local',x.venue],['Convidados',x.guests],['Tipo de evento',x.source],['Pack',x.campaign],['Origem',x.origin]].map(([k,v])=>`<tr><td style="padding:8px;border-bottom:1px solid #eee"><b>${k}</b></td><td style="padding:8px;border-bottom:1px solid #eee">${esc(v)}</td></tr>`).join('');
