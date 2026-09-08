@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Eventpic — Shoot, Share & Print</title>
+<meta name="description" content="Fotografia, projeção e impressão em tempo real para casamentos e eventos.">
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--blue:#1769ff;--ink:#08111f;--muted:#667085;--line:#e4e9f1;--soft:#f5f8fc;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.55}
+a{color:inherit;text-decoration:none}img{max-width:100%;display:block}.wrap{width:min(1160px,calc(100% - 32px));margin:auto}
+header{position:sticky;top:0;z-index:20;background:#fffffff2;backdrop-filter:blur(12px);border-bottom:1px solid #edf0f5}
+nav{height:78px;display:flex;align-items:center;gap:28px}.logo{width:168px}.navlinks{display:flex;gap:26px;margin-left:auto;font-weight:650;font-size:14px}.phone{font-size:13px;color:#475467}.btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:14px 22px;font-weight:800;cursor:pointer}.btn.primary{background:var(--blue);color:#fff;box-shadow:0 12px 30px #1769ff38}.btn.light{background:#fff;border:1px solid var(--line)}
+.hero{padding:72px 0 55px;overflow:hidden;background:radial-gradient(circle at 80% 20%,#dfeaff 0,transparent 32%),linear-gradient(#fff,#f8faff)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}.eyebrow{color:var(--blue);font-weight:850;text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+h1{font-size:clamp(48px,7vw,86px);line-height:.96;letter-spacing:-.065em;margin:14px 0 24px}h1 span{color:var(--blue)}.lead{font-size:20px;color:#475467;max-width:610px}.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px}.chip{background:#fff;border:1px solid var(--line);border-radius:99px;padding:8px 12px;font-size:13px;font-weight:700}
+.hero-visual{position:relative}.hero-visual:before{content:"";position:absolute;inset:8% -5% -5% 13%;background:var(--blue);border-radius:36px;transform:rotate(4deg)}.hero-visual img{position:relative;border-radius:30px;box-shadow:0 25px 60px #0d285332;aspect-ratio:4/5;object-fit:cover}
+section{padding:85px 0}.section-head{max-width:700px;margin-bottom:38px}.section-head small{color:var(--blue);font-weight:850;text-transform:uppercase;letter-spacing:.12em}.section-head h2{font-size:clamp(34px,5vw,54px);line-height:1.04;letter-spacing:-.045em;margin:9px 0 12px}.section-head p{color:var(--muted);font-size:18px}
+.steps,.packs,.events{display:grid;gap:16px}.steps{grid-template-columns:repeat(3,1fr)}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 12px 34px #0b22400a}.num{width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:900}.card h3{font-size:21px;margin:17px 0 8px}.card p{color:var(--muted);margin:0}
+.events{grid-template-columns:repeat(6,1fr)}.event{background:var(--soft);border-radius:18px;padding:22px 12px;text-align:center;font-weight:800}.event b{display:block;font-size:27px;margin-bottom:8px}
+.dark{background:#071120;color:#fff}.dark .section-head p,.dark .card p{color:#aab6c8}.packs{grid-template-columns:repeat(4,1fr)}.pack{background:#101d30;border:1px solid #22324a;border-radius:22px;padding:26px;position:relative}.pack.featured{border-color:#4b8dff;transform:translateY(-8px)}.badge{position:absolute;right:18px;top:18px;background:var(--blue);border-radius:99px;padding:5px 9px;font-size:11px;font-weight:800}.pack h3{font-size:25px;margin:0 0 4px}.pack .for{color:#9db0ca;font-size:13px}.pack ul{padding-left:18px;color:#d9e2ef;font-size:14px}.pack li{margin:9px 0}
+.proof{background:var(--soft)}.quote{max-width:860px;margin:auto;text-align:center}.stars{color:#ffb400;font-size:25px;letter-spacing:4px}.quote blockquote{font-size:clamp(23px,3vw,34px);font-weight:700;line-height:1.35;margin:20px 0}.quote cite{color:var(--muted);font-style:normal}
+.faq{max-width:850px}.faq details{border-bottom:1px solid var(--line);padding:18px 2px}.faq summary{font-weight:800;cursor:pointer;font-size:18px}.faq details p{color:var(--muted)}
+.contact{background:linear-gradient(135deg,#0a1730,#10377a);color:#fff}.contact-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:55px}.contact h2{font-size:clamp(38px,5vw,58px);line-height:1.05;margin:8px 0 18px}.contact-copy p{color:#c7d5ea;font-size:18px}.contact-list{margin-top:28px;color:#eaf0fa}.form{background:#fff;color:var(--ink);padding:28px;border-radius:24px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.full{grid-column:1/-1}label{display:block;font-size:13px;font-weight:800;margin-bottom:6px}input,select{width:100%;border:1px solid #d9e0ea;border-radius:12px;padding:13px 14px;font:inherit;background:#fff}input:focus,select:focus{outline:3px solid #1769ff20;border-color:var(--blue)}.consent{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#475467}.consent input{width:auto;margin-top:4px}.submit{width:100%;margin-top:4px}.status{display:none;border-radius:12px;padding:12px 14px;margin-bottom:15px;font-size:14px}.status.ok{display:block;background:#e9f8ef;color:#116c3d}.status.error{display:block;background:#fff0f0;color:#a42323}.hp{position:absolute;left:-9999px}
+footer{padding:28px 0;color:#667085;font-size:13px}.footer-row{display:flex;justify-content:space-between;gap:20px}
+.wa{position:fixed;right:18px;bottom:18px;background:#25d366;color:#082912;border-radius:99px;padding:13px 18px;font-weight:850;box-shadow:0 10px 30px #0003;z-index:30}
+@media(max-width:900px){.navlinks,.phone{display:none}.hero-grid,.contact-grid{grid-template-columns:1fr}.hero{padding-top:48px}.hero-visual{max-width:560px}.steps{grid-template-columns:1fr}.packs{grid-template-columns:1fr 1fr}.events{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:560px){nav{height:68px}.logo{width:145px}.hero{padding:38px 0}.hero-grid{gap:38px}h1{font-size:52px}.lead{font-size:17px}.packs,.form-grid{grid-template-columns:1fr}.events{grid-template-columns:1fr 1fr}.pack.featured{transform:none}section{padding:62px 0}.form{padding:20px}.footer-row{display:block}.wa{font-size:13px}}
+</style>
+</head>
+<body>
+<header><nav class="wrap"><a href="#"><img class="logo" src="eventpic-logo.png" alt="Eventpic"></a><div class="navlinks"><a href="#como">Como funciona?</a><a href="#eventos">Eventos</a><a href="#packs">Packs</a><a href="#opinioes">Opiniões</a><a href="#faq">FAQs</a></div><a class="phone" href="tel:938291407">938 291 407</a><a class="btn primary" href="#proposta">Pedir proposta</a></nav></header>
+<main>
+<section class="hero"><div class="wrap hero-grid"><div><div class="eyebrow">Fotografia em tempo real</div><h1>Shoot, share <span>&amp; print.</span></h1><p class="lead">Os teus convidados tornam-se fotógrafos. O teu evento ganha vida num ecrã gigante e em impressões instantâneas.</p><div class="actions"><a class="btn primary" href="#proposta">Pedir proposta</a><a class="btn light" href="#como">Ver como funciona</a></div><div class="chips"><span class="chip">Videowall</span><span class="chip">Impressões instantâneas</span><span class="chip">Livro de honra</span></div></div><div class="hero-visual"><img src="app-photo.png" alt="Experiência Eventpic num evento"></div></div></section>
+<section id="como"><div class="wrap"><div class="section-head"><small>Como funciona</small><h2>Uma experiência interativa em três passos.</h2><p>Da câmara do convidado ao ecrã do evento e à impressão física.</p></div><div class="steps"><article class="card"><div class="num">1</div><h3>Partilha ao vivo</h3><p>O convidado lê o QR Code e envia as fotografias através do telemóvel, sem registo.</p></article><article class="card"><div class="num">2</div><h3>Projeção em tempo real</h3><p>As fotografias e vídeos aparecem no videowall e fazem parte da animação do evento.</p></article><article class="card"><div class="num">3</div><h3>Impressão instantânea</h3><p>As melhores fotografias são impressas no momento, com a personalização do evento.</p></article></div></div></section>
+<section id="eventos"><div class="wrap"><div class="section-head"><small>Para qualquer ocasião</small><h2>A Eventpic adapta-se ao teu evento.</h2></div><div class="events"><div class="event"><b>💍</b>Casamentos</div><div class="event"><b>🏢</b>Corporativo</div><div class="event"><b>🎂</b>Aniversários</div><div class="event"><b>🥂</b>Festas privadas</div><div class="event"><b>🕊️</b>Batizados</div><div class="event"><b>✨</b>Comunhões</div></div></div></section>
+<section class="dark" id="packs"><div class="wrap"><div class="section-head"><small>Packs de serviço</small><h2>Escolhe a solução ideal.</h2><p>Tudo o que precisas para dar vida ao teu evento.</p></div><div class="packs">
+<article class="pack"><h3>Silver</h3><div class="for">Até 150 pessoas</div><ul><li>Televisão ou projetor</li><li>4 horas de impressão</li><li>1 assistente</li><li>Personalização</li><li>Fotos em digital</li></ul><a class="btn primary" href="#proposta">Pedir orçamento</a></article>
+<article class="pack"><h3>Gold</h3><div class="for">Até 200 pessoas</div><ul><li>Videowall 2×2 m</li><li>Impressão ilimitada</li><li>2 assistentes</li><li>Personalização</li><li>Pen USB</li></ul><a class="btn primary" href="#proposta">Pedir orçamento</a></article>
+<article class="pack featured"><span class="badge">Mais escolhido</span><h3>Premium</h3><div class="for">Até 300 pessoas</div><ul><li>Videowall 2×2 m</li><li>Impressão ilimitada</li><li>Livro de honra</li><li>100 envelopes</li><li>Internet por satélite</li><li>Áudio, vídeo e SMS</li></ul><a class="btn primary" href="#proposta">Pedir orçamento</a></article>
+<article class="pack"><h3>Extreme</h3><div class="for">Até 500 pessoas</div><ul><li>Videowall 4×2 m</li><li>Impressão ilimitada</li><li>3 assistentes</li><li>Livro de honra</li><li>150 envelopes</li><li>Kiss Cam e GoPro</li></ul><a class="btn primary" href="#proposta">Pedir orçamento</a></article>
+</div></div></section>
+<section class="proof" id="opinioes"><div class="wrap quote"><div class="stars">★★★★★</div><blockquote>“O serviço foi muito acima da expectativa. Todo o evento ganhou vida com a Eventpic!”</blockquote><cite>Gisela · Casamento</cite></div></section>
+<section id="faq"><div class="wrap faq"><div class="section-head"><small>Esclarecimentos</small><h2>Perguntas frequentes.</h2></div><details open><summary>O que é a Eventpic?</summary><p>Transformamos as fotografias dos convidados numa experiência interativa, com partilha, projeção e impressão em tempo real.</p></details><details><summary>É necessário instalar alguma aplicação?</summary><p>Não. Os convidados acedem através de um QR Code e utilizam o telemóvel.</p></details><details><summary>Tenho assistência durante o evento?</summary><p>Sim. Todos os packs incluem uma equipa dedicada para acompanhar a experiência.</p></details><details><summary>Como recebo as fotografias?</summary><p>No final do evento entregamos o conteúdo em formato digital, de acordo com o pack escolhido.</p></details></div></section>
+<section class="contact" id="proposta"><div class="wrap contact-grid"><div class="contact-copy"><div class="eyebrow">Pedido de orçamento</div><h2>Vamos planear o teu evento.</h2><p>Preenche o formulário. O pedido entra diretamente na nossa equipa e respondemos com uma proposta personalizada.</p><div class="contact-list"><p><strong>Linha direta</strong><br>938 291 407</p><p><strong>Email</strong><br>hello@eventpic.pt</p><p>Atendimento em todo o território nacional.</p></div></div><form class="form" id="leadForm"><div id="formStatus" class="status" role="status" aria-live="polite"></div><div class="form-grid">
+<div><label for="names">Nome *</label><input id="names" required maxlength="160" autocomplete="name"></div>
+<div><label for="email">Email *</label><input id="email" type="email" required maxlength="254" autocomplete="email"></div>
+<div><label for="phone">Telemóvel *</label><input id="phone" type="tel" required maxlength="40" autocomplete="tel"></div>
+<div><label for="pack">Pack *</label><select id="pack" required><option value="">Selecionar</option><option>Silver</option><option>Gold</option><option>Premium</option><option>Extreme</option><option>A aconselhar</option></select></div>
+<div><label for="eventType">Tipo de evento *</label><select id="eventType" required><option value="">Selecionar</option><option>Casamento</option><option>Batizado</option><option>Comunhão</option><option>Aniversário</option><option>Corporativo</option><option>Outro</option></select></div>
+<div><label for="guests">Número de convidados *</label><input id="guests" type="number" min="1" max="5000" required></div>
+<div><label for="venue">Espaço do evento *</label><input id="venue" required maxlength="180"></div>
+<div><label for="date">Data do evento *</label><input id="date" type="date" required></div>
+<div class="full"><label for="contact">Forma preferencial de contacto *</label><select id="contact" required><option value="">Selecionar</option><option>WhatsApp</option><option>Telefone</option><option>Email</option></select></div>
+<div class="hp" aria-hidden="true"><label>Website<input id="website" tabindex="-1" autocomplete="off"></label></div>
+<label class="consent full"><input id="consent" type="checkbox" required>Autorizo a utilização dos meus dados para responder ao pedido de proposta.</label>
+<div class="full"><button class="btn primary submit" id="submitBtn" type="submit">Enviar pedido</button></div>
+</div></form></div></section>
+</main>
+<footer><div class="wrap footer-row"><span>© 2026 Eventpic. Todos os direitos reservados.</span><span>Instagram · Facebook</span></div></footer>
+<a class="wa" href="https://wa.me/351938291407?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Eventpic%20e%20gostaria%20de%20pedir%20um%20or%C3%A7amento." target="_blank" rel="noopener">WhatsApp</a>
+<script>
+(function(){
+ var client=supabase.createClient(EVENTPIC_SUPABASE_URL,EVENTPIC_SUPABASE_PUBLISHABLE_KEY);
+ var form=document.getElementById('leadForm'),status=document.getElementById('formStatus'),button=document.getElementById('submitBtn');
+ var params=new URLSearchParams(location.search),started=Date.now();
+ form.addEventListener('submit',async function(e){
+  e.preventDefault();
+  status.className='status';status.textContent='';
+  if(document.getElementById('website').value||Date.now()-started<1500)return;
+  button.disabled=true;button.textContent='A enviar…';
+  var payload={
+   p_names:document.getElementById('names').value.trim(),
+   p_phone:document.getElementById('phone').value.trim(),
+   p_email:document.getElementById('email').value.trim(),
+   p_wedding_date:document.getElementById('date').value,
+   p_venue:document.getElementById('venue').value.trim(),
+   p_guests:Number(document.getElementById('guests').value),
+   p_origin:'Landing Page',
+   p_source:document.getElementById('eventType').value,
+   p_medium:document.getElementById('contact').value,
+   p_campaign:document.getElementById('pack').value
+  };
+  if(params.get('utm_source'))payload.p_origin='Landing Page · '+params.get('utm_source').slice(0,60);
+  try{
+   var result=await client.rpc('create_public_lead',payload);
+   if(result.error)throw result.error;
+   form.reset();status.className='status ok';status.textContent='Pedido enviado. A equipa Eventpic vai entrar em contacto contigo.';
+  }catch(err){
+   status.className='status error';status.textContent='Não foi possível enviar. Tenta novamente ou liga 938 291 407.';
+  }finally{button.disabled=false;button.textContent='Enviar pedido';}
+ });
+})();
+</script>
+</body>
+</html>
