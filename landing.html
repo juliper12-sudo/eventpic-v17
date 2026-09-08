@@ -89,6 +89,7 @@ footer{padding:28px 0;color:#667085;font-size:13px}.footer-row{display:flex;just
    if(!response.ok)throw new Error(raw||('Erro '+response.status));
    var leadId=raw?JSON.parse(raw):null;
    if(!leadId)throw new Error('A base de dados não confirmou o pedido.');
+   fetch('/api/notify-lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({id:leadId},payload))}).catch(function(e){console.warn('Aviso de email não enviado:',e)});
    form.reset();status.className='status ok';status.textContent='Pedido enviado e registado. A equipa Eventpic vai entrar em contacto contigo.';
   }catch(err){
    console.error('Falha no envio do lead:',err);status.className='status error';status.textContent='Não foi possível registar o pedido. Atualiza a página e tenta novamente ou liga 938 291 407.';
