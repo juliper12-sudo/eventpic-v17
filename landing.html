@@ -6,7 +6,6 @@
 <title>Eventpic — Shoot, Share & Print</title>
 <meta name="description" content="Fotografia, projeção e impressão em tempo real para casamentos e eventos.">
 <script src="config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--blue:#1769ff;--ink:#08111f;--muted:#667085;--line:#e4e9f1;--soft:#f5f8fc;--white:#fff}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.55}
@@ -63,7 +62,6 @@ footer{padding:28px 0;color:#667085;font-size:13px}.footer-row{display:flex;just
 <a class="wa" href="https://wa.me/351938291407?text=Ol%C3%A1!%20Vim%20pelo%20site%20da%20Eventpic%20e%20gostaria%20de%20pedir%20um%20or%C3%A7amento." target="_blank" rel="noopener">WhatsApp</a>
 <script>
 (function(){
- var client=supabase.createClient(EVENTPIC_SUPABASE_URL,EVENTPIC_SUPABASE_PUBLISHABLE_KEY);
  var form=document.getElementById('leadForm'),status=document.getElementById('formStatus'),button=document.getElementById('submitBtn');
  var params=new URLSearchParams(location.search);
  form.addEventListener('submit',async function(e){
@@ -85,9 +83,12 @@ footer{padding:28px 0;color:#667085;font-size:13px}.footer-row{display:flex;just
   };
   if(params.get('utm_source'))payload.p_origin='Landing Page · '+params.get('utm_source').slice(0,60);
   try{
-   var result=await client.rpc('create_public_lead',payload);
-   if(result.error)throw result.error;
-   if(!result.data)throw new Error('A base de dados não confirmou o pedido.');
+   var endpoint=EVENTPIC_SUPABASE_URL+'/rest/v1/rpc/create_public_lead';
+   var response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','apikey':EVENTPIC_SUPABASE_PUBLISHABLE_KEY,'Authorization':'Bearer '+EVENTPIC_SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(payload)});
+   var raw=await response.text();
+   if(!response.ok)throw new Error(raw||('Erro '+response.status));
+   var leadId=raw?JSON.parse(raw):null;
+   if(!leadId)throw new Error('A base de dados não confirmou o pedido.');
    form.reset();status.className='status ok';status.textContent='Pedido enviado e registado. A equipa Eventpic vai entrar em contacto contigo.';
   }catch(err){
    console.error('Falha no envio do lead:',err);status.className='status error';status.textContent='Não foi possível registar o pedido. Atualiza a página e tenta novamente ou liga 938 291 407.';
